@@ -1,6 +1,7 @@
 
 import argparse
 import os
+import re
 import sys
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -9,7 +10,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Setting up the Jinja2 environment
 env = Environment(
     loader=FileSystemLoader(searchpath="./"),
     autoescape=select_autoescape(['j2'])
@@ -56,10 +56,16 @@ def main(args):
             temperature=args.temperature,
             max_tokens=args.max_tokens,
         )
-        # parse the output
-        print("Output: ", chat_completion.choices[0].message.content)
-        # get the usage information
+        print("Output: ", re.sub(r'<think>.*?</think>', '', chat_completion.choices[0].message.content, flags=re.DOTALL))
         print("Usage: ", chat_completion.usage)
+        f = open("./output.txt", "a")
+        f.write(re.sub(r'<think>.*?</think>', '', chat_completion.choices[0].message.content, flags=re.DOTALL))
+        f.close()
+        message = re.findall(r'<message>(.*?)</message>', chat_completion.choices[0].message.content, flags=re.DOTALL)
+        print(message)
+        f = open("./message.txt", "a")
+        f.write(message[0])
+        f.close()
     except Exception as e:
         print(f"Error accessing OpenAI API: {e}")
         sys.exit(1)
