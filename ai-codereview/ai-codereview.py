@@ -3,9 +3,10 @@ import argparse
 import os
 import re
 import sys
+import openai
+import logging
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ def main(args):
         f = open("./message.txt", "a")
         f.write(message[0])
         f.close()
-    except OpenAI.APIError as e:
+    except openai.APIError as e:
         logger.error(f"Error accessing OpenAI API: {e}")
         sys.exit(1)
 
