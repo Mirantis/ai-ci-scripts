@@ -66,8 +66,8 @@ def main(args):
         f = open("./message.txt", "a")
         f.write(message[0])
         f.close()
-    except Exception as e:
-        print(f"Error accessing OpenAI API: {e}")
+    except OpenAI.APIError as e:
+        logger.error(f"Error accessing OpenAI API: {e}")
         sys.exit(1)
 
 
