@@ -68,7 +68,7 @@ def main(args):
         f.write(message[0])
         f.close()
     except openai.APIError as e:
-        logger.error(f"Error accessing OpenAI API: {e}")
+        logger.error('Error accessing OpenAI API: %s', e)
         sys.exit(1)
 
 
