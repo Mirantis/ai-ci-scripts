@@ -3,9 +3,9 @@ import argparse
 import os
 import re
 import sys
+import logging
 from openai import OpenAI
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def load_prompt_template(args):
         template = env.get_template(args.template_file)
         return template
     except Exception as e:
-        print(f"Error loading template: {e}")
+        logger.error(f"Error loading template: {e}")
         sys.exit(1)
 
 
@@ -56,18 +56,29 @@ def main(args):
             temperature=args.temperature,
             max_tokens=args.max_tokens,
         )
-        print("Output: ", re.sub(r'<think>.*?</think>', '', chat_completion.choices[0].message.content, flags=re.DOTALL))
-        print("Usage: ", chat_completion.usage)
+        output = re.sub(r'<think>.*?</think>', '', chat_completion.choices[0].message.content, flags=re.DOTALL)
+        print('Output:', output)
         f = open("./output.txt", "a")
-        f.write(re.sub(r'<think>.*?</think>', '', chat_completion.choices[0].message.content, flags=re.DOTALL))
+        f.write(output)
         f.close()
-        message = re.findall(r'<message>(.*?)</message>', chat_completion.choices[0].message.content, flags=re.DOTALL)
-        print(message)
-        f = open("./message.txt", "a")
-        f.write(message[0])
+        prompt_summary = 'Summarize me this code review in 5 lines: ' + output
+        chat_completion_summary = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": ""},
+                {"role": "user", "content": prompt_summary },
+            ],
+            max_tokens=args.max_tokens,
+            temperature=0.6,
+        )
+        summary = re.sub(r'<think>.*?</think>', '', chat_completion_summary.choices[0].message.content, flags=re.DOTALL)
+        print(summary)
+        f = open("./summary.txt", "w")
+        f.write(summary)
         f.close()
+        print("Usage: ", chat_completion.usage)
     except Exception as e:
-        print(f"Error accessing OpenAI API: {e}")
+        logger.info('Error accessing OpenAI API: %s', e)
         sys.exit(1)
 
 
