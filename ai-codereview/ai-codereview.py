@@ -34,7 +34,7 @@ def load_prompt_template(args):
         template = env.get_template(args.template_file)
         return template
     except Exception as e:
-        logger.error(f"Error loading template: {e}")
+        logger.error('Error loading template: %s', e)
         sys.exit(1)
 
 
@@ -73,7 +73,7 @@ def main(args):
         )
         summary = re.sub(r'<think>.*?</think>', '', chat_completion_summary.choices[0].message.content, flags=re.DOTALL)
         print(summary)
-        f = open("./summary.txt", "w")
+        f = open("./summary.txt", "a")
         f.write(summary)
         f.close()
         print("Usage: ", chat_completion.usage)
