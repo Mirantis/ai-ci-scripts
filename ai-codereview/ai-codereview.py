@@ -61,7 +61,7 @@ def main(args):
         f = open("./output.txt", "a")
         f.write(output)
         f.close()
-        prompt_summary = 'Summarize me this code review in 5 lines: ' + output
+        prompt_summary = 'Summarize me this code review in 5 lines use markdown format: ' + output
         chat_completion_summary = client.chat.completions.create(
             model=MODEL,
             messages=[
