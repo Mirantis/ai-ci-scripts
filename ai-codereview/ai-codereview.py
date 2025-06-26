@@ -79,7 +79,7 @@ def main(args):
         print("Usage: ", chat_completion.usage)
     except Exception as e:
         logger.info('Error accessing OpenAI API: %s', e)
-        sys.exit(1)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
